@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Feedback</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f4;
+            color: #333;
+        }
+        .container {
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            font-weight: bold;
+            display: block;
+            margin-bottom: 5px;
+        }
+        input[type="text"], input[type="email"], textarea {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+            box-sizing: border-box;
+            resize: vertical;
+            background-color: #f9f9f9;
+        }
+        textarea {
+            height: 150px;
+        }
+        input[type="submit"] {
+            background-color: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s ease;
+            margin-top: 20px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        input[type="submit"]:hover {
+            background-color: #0056b3;
+        }
+        .success-message {
+            background-color: #4CAF50;
+            color: #fff;
+            padding: 15px;
+            margin-top: 20px;
+            border-radius: 4px;
+            text-align: center;
+        }
+        .rating {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-top: 20px;
+        }
+        .rating label {
+            margin-right: 10px;
+            font-weight: bold;
+            color: black; /* Change color */
+        }
+        .rating input[type="radio"] {
+            display: none;
+        }
+        .rating label {
+            cursor: pointer;
+            font-size: 24px;
+            color: #ddd;
+            transition: color 0.3s ease;
+        }
+        .rating input[type="radio"]:checked + label,
+        .rating input[type="radio"]:checked ~ label {
+            color: #ffc107;
+        }
+        .rating input[type="radio"]:hover + label {
+            color: #ffec80;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Give Us Your Feedback</h1>
+        <form id="feedbackForm">
+            <div class="form-group">
+                <label for="name">Your Name:</label>
+                <input type="text" id="name" name="name" required>
+            </div>
+            <div class="form-group">
+                <label for="email">Your Email:</label>
+                <input type="email" id="email" name="email" required>
+            </div>
+            <div class="form-group">
+                <label for="feedback">Your Feedback:</label>
+                <textarea id="feedback" name="feedback" required></textarea>
+            </div>
+            <div class="rating">
+                <label for="rating" style="color: black;">How would you rate your experience?</label>
+                <input type="radio" id="rating1" name="rating" value="1">
+                <label for="rating1">★</label>
+                <input type="radio" id="rating2" name="rating" value="2">
+                <label for="rating2">★</label>
+                <input type="radio" id="rating3" name="rating" value="3">
+                <label for="rating3">★</label>
+                <input type="radio" id="rating4" name="rating" value="4">
+                <label for="rating4">★</label>
+                <input type="radio" id="rating5" name="rating" value="5">
+                <label for="rating5">★</label>
+            </div>
+            <input type="submit" value="Submit">
+        </form>
+        <div id="successMessage" class="success-message" style="display: none;">
+            Thank you for your feedback!
+        </div>
+    </div>
+    <script>
+        document.getElementById("feedbackForm").addEventListener("submit", function(event) {
+            event.preventDefault();
+            var formData = new FormData(this);
+            var jsonData = {};
+            formData.forEach(function(value, key){
+                jsonData[key] = value;
+            });
+            var xhr = new XMLHttpRequest();
+            xhr.onreadystatechange = function() {
+                if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+                    document.getElementById("feedbackForm").reset();
+                    document.getElementById("successMessage").style.display = "block";
+                    setTimeout(function() {
+                        document.getElementById("successMessage").style.display = "none";
+                    }, 3000); // Hide success message after 3 seconds
+                }
+            };
+            xhr.open("POST", "submit_feedback.php", true);
+            xhr.setRequestHeader("Content-Type", "application/json");
+            xhr.send(JSON.stringify(jsonData));
+        });
+
+        // JavaScript to handle star rating
+        const stars = document.querySelectorAll('.rating input[type="radio"] + label');
+        stars.forEach((star, index) => {
+            star.addEventListener('click', () => {
+                resetStarsColor();
+                for (let i = 0; i <= index; i++) {
+                    stars[i].style.color = '#ffc107';
+                }
+            });
+        });
+
+        function resetStarsColor() {
+            stars.forEach(star => {
+                star.style.color = '#ddd';
+            });
+        }
+    </script>
+</body>
+</html>
